@@ -63,7 +63,7 @@ func (this *Router) GetHandler(resource string) (Handler, error) {
 //
 func (this *Router) ParseURL(url string) (resource string, version int, err error) {
 	//确定是否是本服务能提供的控制类型
-	urlPattern, _ := "/v(\\d+)/(\\w+)"
+	urlPattern := "/v(\\d+)/(\\w+)"
 	urlRegexp, err := regexp.Compile(urlPattern)
 	if err != nil {
 		return
