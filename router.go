@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
-
-	"github.com/outmana/log4jzl"
 )
 
 type Router struct {
