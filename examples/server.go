@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	_ "flag"
 	"fmt"
 	"net/http"
 	_ "net/http/pprof"
