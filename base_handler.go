@@ -12,7 +12,7 @@ import (
 )
 
 type BaseHandler struct {
-	Logger *Logger
+	Logger Logger
 }
 
 func NewBaseHandler(logger Logger) *BaseHandler {
