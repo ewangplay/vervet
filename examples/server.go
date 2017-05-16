@@ -34,7 +34,7 @@ func main() {
 		return
 	}
 
-	base_handler := vervet.NewBaseHandler(logger)
+	base_handler := vervet.NewBaseHandler(config, logger)
 	routes := map[string]vervet.Handler{
 		"v1/demo": &DemoHandler{base_handler},
         "v1/demo/animal": &DemoAnimalHandler{base_handler},

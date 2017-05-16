@@ -10,7 +10,7 @@ import (
 )
 
 type Router struct {
-    Config
+	Config
 	routes map[string]Handler
 }
 
@@ -28,7 +28,7 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	resources, err := this.ParseURL(r.RequestURI)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, MakeErrorResult(-1, err.Error()))
+		io.WriteString(w, this.MakeErrorResult(-1, err.Error()))
 		return
 	}
 
@@ -54,7 +54,7 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			result, err = this_handler.Process(r, resources, this_handler.ProcessFunc)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				io.WriteString(w, result) //MakeErrorResult(-1, err.Error()))
+				io.WriteString(w, result)
 			} else {
 				header.Add("Content-Length", fmt.Sprintf("%v", len(result)))
 				io.WriteString(w, result)
@@ -65,7 +65,7 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, MakeErrorResult(-1, err.Error()))
+		io.WriteString(w, this.MakeErrorResult(-1, err.Error()))
 	}
 
 	return
@@ -84,11 +84,11 @@ func (this *Router) GetHandler(resource string) (Handler, error) {
 //通过正则表达式选择路由程序
 //
 func (this *Router) ParseURL(url string) (resources []string, err error) {
-	//urlPattern := "/v(\\d+)/(\\w+)"
+	//url pattern example: "/(v\\d+)/(\\w+)/?(\\w+)?"
 	urlPattern, err := this.GetUrlPattern()
-    if err != nil {
-        return
-    }
+	if err != nil {
+		return
+	}
 
 	urlRegexp, err := regexp.Compile(urlPattern)
 	if err != nil {
@@ -101,12 +101,6 @@ func (this *Router) ParseURL(url string) (resources []string, err error) {
 		return
 	}
 
-	/*
-	   for i, str := range matchs {
-	       fmt.Println(i, ": ", str)
-	   }
-	*/
-
 	for i := 1; i < len(matchs); i++ {
 		resources = append(resources, matchs[i])
 	}
@@ -114,14 +108,25 @@ func (this *Router) ParseURL(url string) (resources []string, err error) {
 	return
 }
 
-func MakeErrorResult(errcode int, errmsg string) string {
+func (this *Router) MakeErrorResult(errcode int, errmsg string) string {
+
+	ERROR_CODE, err := this.GetErrorCodeLiteral()
+	if err != nil {
+		ERROR_CODE = "error_code"
+	}
+
+	ERROR_MSG, err := this.GetErrorMessageLiteral()
+	if err != nil {
+		ERROR_MSG = "message"
+	}
+
 	data := map[string]interface{}{
-		"error_code": errcode,
-		"message":    errmsg,
+		ERROR_CODE: errcode,
+		ERROR_MSG:  errmsg,
 	}
 	result, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Sprintf("{\"error_code\":%v,\"message\":\"%v\"}", errcode, errmsg)
+		return fmt.Sprintf("{\"%s\":%v,\"%s\":\"%v\"}", ERROR_CODE, ERROR_MSG, errcode, errmsg)
 	}
 	return string(result)
 }
