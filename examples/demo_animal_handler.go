@@ -45,7 +45,7 @@ func (this *DemoAnimalHandler) ProcessFunc(version int, resource string, method 
 }
 
 func (this *DemoAnimalHandler) GetDemoAnimalInfo(result map[string]interface{}) error {
-    result["demo"] = "http get: call GetDemoInfoInfo"
+    result["demo"] = "http get: call GetDemoAnimalInfo"
 
 	return nil
 }
