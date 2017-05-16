@@ -25,10 +25,10 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	header.Add("Content-Type", "application/json")
 	header.Add("charset", "UTF-8")
 
-	resources, err := this.ParseURL(r.RequestURI)
+	resources, err := this.parseURL(r.RequestURI)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, this.MakeErrorResult(-1, err.Error()))
+		io.WriteString(w, this.makeErrorResult(-1, err.Error()))
 		return
 	}
 
@@ -49,7 +49,7 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	for i := len(res) - 1; i >= 0; i-- {
 		resource := res[i]
 
-		this_handler, err = this.GetHandler(resource)
+		this_handler, err = this.getHandler(resource)
 		if err == nil {
 			result, err = this_handler.Process(r, resources, this_handler.ProcessFunc)
 			if err != nil {
@@ -65,13 +65,13 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, this.MakeErrorResult(-1, err.Error()))
+		io.WriteString(w, this.makeErrorResult(-1, err.Error()))
 	}
 
 	return
 }
 
-func (this *Router) GetHandler(resource string) (Handler, error) {
+func (this *Router) getHandler(resource string) (Handler, error) {
 	handler, found := this.routes[resource]
 	if found && handler != nil {
 		return handler, nil
@@ -80,10 +80,7 @@ func (this *Router) GetHandler(resource string) (Handler, error) {
 	}
 }
 
-//
-//通过正则表达式选择路由程序
-//
-func (this *Router) ParseURL(url string) (resources []string, err error) {
+func (this *Router) parseURL(url string) (resources []string, err error) {
 	//url pattern example: "/(v\\d+)/(\\w+)/?(\\w+)?"
 	urlPattern, err := this.GetUrlPattern()
 	if err != nil {
@@ -108,7 +105,7 @@ func (this *Router) ParseURL(url string) (resources []string, err error) {
 	return
 }
 
-func (this *Router) MakeErrorResult(errcode int, errmsg string) string {
+func (this *Router) makeErrorResult(errcode int, errmsg string) string {
 
 	ERROR_CODE, err := this.GetErrorCodeLiteral()
 	if err != nil {
