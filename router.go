@@ -29,44 +29,44 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		io.WriteString(w, MakeErrorResult(-1, err.Error()))
-        return
+		return
 	}
 
-    var res []string
-    var resource string
-    for i, r := range resources {
-        if i == 0 {
-            resource = r
-        } else {
-            resource += fmt.Sprintf("/%s", r)
-        }
-        res = append(res, resource)
-    }
+	var res []string
+	var resource string
+	for i, r := range resources {
+		if i == 0 {
+			resource = r
+		} else {
+			resource += fmt.Sprintf("/%s", r)
+		}
+		res = append(res, resource)
+	}
 
-    var this_handler Handler
-    var result string
+	var this_handler Handler
+	var result string
 
-    for i := len(res)-1; i >= 0; i-- {
-        resource := res[i]
+	for i := len(res) - 1; i >= 0; i-- {
+		resource := res[i]
 
-        this_handler, err = this.GetHandler(resource)
-        if err == nil {
-            result, err = this_handler.Process(r, version, resource, this_handler.ProcessFunc)
-            if err != nil {
-                w.WriteHeader(http.StatusInternalServerError)
-                io.WriteString(w, result) //MakeErrorResult(-1, err.Error()))
-            } else {
-                header.Add("Content-Length", fmt.Sprintf("%v", len(result)))
-                io.WriteString(w, result)
-            }
-            return
-        }
-    }
+		this_handler, err = this.GetHandler(resource)
+		if err == nil {
+			result, err = this_handler.Process(r, version, resource, this_handler.ProcessFunc)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				io.WriteString(w, result) //MakeErrorResult(-1, err.Error()))
+			} else {
+				header.Add("Content-Length", fmt.Sprintf("%v", len(result)))
+				io.WriteString(w, result)
+			}
+			return
+		}
+	}
 
-    if err != nil {
-        w.WriteHeader(http.StatusInternalServerError)
-        io.WriteString(w, MakeErrorResult(-1, err.Error()))
-    }
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		io.WriteString(w, MakeErrorResult(-1, err.Error()))
+	}
 
 	return
 }
@@ -95,18 +95,18 @@ func (this *Router) ParseURL(url string) (version int, resources []string, err e
 		return
 	}
 
-    /*
-    for i, str := range matchs {
-        fmt.Println(i, ": ", str)
-    }
-    */
+	/*
+	   for i, str := range matchs {
+	       fmt.Println(i, ": ", str)
+	   }
+	*/
 
 	versionNum, _ := strconv.ParseInt(matchs[1], 10, 8)
 	version = int(versionNum)
 
-    for i := 2; i < len(matchs); i++ {
-        resources = append(resources, matchs[i]
-    }
+	for i := 2; i < len(matchs); i++ {
+		resources = append(resources, matchs[i])
+	}
 
 	return
 }
