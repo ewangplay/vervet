@@ -11,7 +11,7 @@ type DemoAnimalHandler struct {
 	*vervet.BaseHandler
 }
 
-func (this *DemoAnimalHandler) ProcessFunc(version int, resource string, method string, params map[string]string, body []byte, result map[string]interface{}) error {
+func (this *DemoAnimalHandler) ProcessFunc(method string, resources []string, params map[string]string, body []byte, result map[string]interface{}) error {
 
 	id, has_id := params["id"]
 

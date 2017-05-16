@@ -19,7 +19,7 @@ func NewBaseHandler(logger Logger) *BaseHandler {
     return &BaseHandler{logger}
 }
 
-func (this *BaseHandler) Process(r *http.Request, version int, resource string, f ProcessFunc) (string, error) {
+func (this *BaseHandler) Process(r *http.Request, resources []string, f ProcessFunc) (string, error) {
 	var err error
 	var body []byte
 	var startTime time.Time
@@ -54,7 +54,7 @@ func (this *BaseHandler) Process(r *http.Request, version int, resource string, 
 	}
 
     //Perform the actual business process
-	err = f(version, resource, r.Method, params, body, result)
+	err = f(r.Method, resources, params, body, result)
 	if err != nil {
 		result["error_code"] = -1
 		if strings.HasPrefix(err.Error(), "[ERROR_INFO]") {

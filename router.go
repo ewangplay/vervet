@@ -26,7 +26,7 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	header.Add("Content-Type", "application/json")
 	header.Add("charset", "UTF-8")
 
-	version, resources, err := this.ParseURL(r.RequestURI)
+	resources, err := this.ParseURL(r.RequestURI)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		io.WriteString(w, MakeErrorResult(-1, err.Error()))
@@ -52,7 +52,7 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		this_handler, err = this.GetHandler(resource)
 		if err == nil {
-			result, err = this_handler.Process(r, version, resource, this_handler.ProcessFunc)
+			result, err = this_handler.Process(r, resources, this_handler.ProcessFunc)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				io.WriteString(w, result) //MakeErrorResult(-1, err.Error()))
@@ -84,7 +84,7 @@ func (this *Router) GetHandler(resource string) (Handler, error) {
 //
 //通过正则表达式选择路由程序
 //
-func (this *Router) ParseURL(url string) (version int, resources []string, err error) {
+func (this *Router) ParseURL(url string) (resources []string, err error) {
 	//urlPattern := "/v(\\d+)/(\\w+)"
 	urlPattern, err := this.GetUrlPattern()
     if err != nil {
@@ -108,10 +108,7 @@ func (this *Router) ParseURL(url string) (version int, resources []string, err e
 	   }
 	*/
 
-	versionNum, _ := strconv.ParseInt(matchs[1], 10, 8)
-	version = int(versionNum)
-
-	for i := 2; i < len(matchs); i++ {
+	for i := 1; i < len(matchs); i++ {
 		resources = append(resources, matchs[i])
 	}
 
