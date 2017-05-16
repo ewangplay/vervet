@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "flag"
+	"flag"
 	"fmt"
 	"net/http"
 	_ "net/http/pprof"
@@ -14,6 +14,19 @@ import (
 func main() {
 	var err error
 
+    
+	//读取启动参数
+	var configFile string
+	flag.StringVar(&configFile, "config", "config.ini", "configure file full path")
+	flag.Parse()
+
+	//读取配置文件
+	config, err := NewConfigure(configFile)
+	if err != nil {
+		fmt.Printf("[ERROR] Parse Configure File Error: %v\n", err)
+		return
+	}
+
 	//启动日志系统
 	logger, err := log4jzl.New("ProxyServer")
 	if err != nil {
@@ -24,8 +37,9 @@ func main() {
 	base_handler := vervet.NewBaseHandler(logger)
 	routes := map[string]vervet.Handler{
 		"demo": &DemoHandler{base_handler},
+        "demo/animal": &DemoAnimalHandler{base_handler},
 	}
-	router := vervet.NewRouter(routes)
+	router := vervet.NewRouter(config, routes)
 
 	addr := ":8089"
 	logger.Info("Server Start..., Listening on %v", addr)

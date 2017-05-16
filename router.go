@@ -11,11 +11,12 @@ import (
 )
 
 type Router struct {
+    Config
 	routes map[string]Handler
 }
 
-func NewRouter(routes map[string]Handler) *Router {
-	return &Router{routes}
+func NewRouter(config Config, routes map[string]Handler) *Router {
+	return &Router{config, routes}
 }
 
 func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -84,11 +85,17 @@ func (this *Router) GetHandler(resource string) (Handler, error) {
 //通过正则表达式选择路由程序
 //
 func (this *Router) ParseURL(url string) (version int, resources []string, err error) {
-	urlPattern := "/v(\\d+)/(\\w+)"
+	//urlPattern := "/v(\\d+)/(\\w+)"
+	urlPattern, err := this.GetUrlPattern()
+    if err != nil {
+        return
+    }
+
 	urlRegexp, err := regexp.Compile(urlPattern)
 	if err != nil {
 		return
 	}
+
 	matchs := urlRegexp.FindStringSubmatch(url)
 	if matchs == nil {
 		err = errors.New("Wrong Request URL")
