@@ -5,6 +5,6 @@ type Config interface {
     GetLogIdLiteral() (string, error)
     GetErrorCodeLiteral() (string, error)
     GetErrorMessageLiteral() (string, error)
-    GetTimeCostLiteral() () (string, error)
+    GetTimeCostLiteral() (string, error)
     GetRequestUrlLiteral() (string, error)
 }
